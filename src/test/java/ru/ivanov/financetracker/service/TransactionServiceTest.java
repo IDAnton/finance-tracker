@@ -6,14 +6,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.ivanov.financetracker.model.Transaction;
 import ru.ivanov.financetracker.model.User;
 import ru.ivanov.financetracker.repository.TransactionRepository;
 import ru.ivanov.financetracker.repository.UserRepository;
 import ru.ivanov.financetracker.utils.TestDtoCreator;
-
-import java.math.BigDecimal;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,7 +31,6 @@ public class TransactionServiceTest {
     @InjectMocks
     private TransactionService transactionService;
 
-    @Autowired
     private TestDtoCreator dtoCreator;
 
     private Long userId;
@@ -44,11 +40,11 @@ public class TransactionServiceTest {
     void setUp() {
         userId = 1L;
         userName = "test";
+        dtoCreator = new TestDtoCreator();
     }
 
     @Test
     void createTransaction_Success(){
-        BigDecimal expectedValue = new BigDecimal("1000.00");
         when(testUser.getId()).thenReturn(userId);
         when(userRepository.findByUsername(userName)).thenReturn(Optional.of(testUser));
 
