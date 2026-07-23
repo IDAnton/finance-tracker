@@ -14,5 +14,4 @@ RESTful API для учета финансов
 
 ## ⚙️ Локальный запуск
 1. Клонировать репозиторий: `git clone https://github.com/IDAnton/finance-tracker`
-2. Запустить PostgreSQL в Docker: `docker-compose up -d`
-3. Запустить приложение через Maven: `./mvnw spring-boot:run`
+2. Запустить docker-compose: `docker-compose up -d`

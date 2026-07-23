@@ -3,13 +3,40 @@ services:
     image: postgres:16-alpine
     container_name: finance-postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: finance_db
+      POSTGRES_USER: ${DB_ROOT_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_ROOT_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_DATABASE_NAME:-finance_db}
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - finance-network
+
+  finance-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: finance-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=postgres-db
+      - DB_NAME=${DB_DATABASE_NAME:-finance_db}
+      - DB_USERNAME=${DB_ROOT_USER:-postgres}
+      - DB_PASSWORD=${DB_ROOT_PASSWORD:-postgres}
+      - JWT_SECRET=${APP_JWT_SECRET:-APP_JWT_SECRET}
+      - JWT_EXPIRATION=3600000
+    networks:
+      - finance-network
+    depends_on:
+      - postgres-db
+
+
+networks:
+  finance-network:
+    driver: bridge
+
 
 volumes:
   pgdata:
