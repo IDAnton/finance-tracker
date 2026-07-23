@@ -23,3 +23,17 @@ jobs:
 
       - name: Тестирование
         run: ./mvnw clean test
+
+      - name: Настройка Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Cборка Docker образа Spring приложения
+        uses: docker/build-push-action@v5
+
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: finance-tracker:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
