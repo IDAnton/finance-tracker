@@ -38,8 +38,6 @@ public class UserControllerIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private TestDtoCreator dtoCreator;
 
     @Autowired
     private SecurityConfig securityConfig;
@@ -47,32 +45,32 @@ public class UserControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    String testUsername = "test_user";
-    String testEmail = "test@mail.com";
-    String testPass = "qwerty123";
+    private static final String TEST_USER = "test_user";
+    private static final String TEST_EMAIL = "test@mail.com";
+    private static final String TEST_PASSWORD = "qwerty123";
 
 
     @Test
-    void registerUser_Success() throws Exception{
+    void testRegisterUserSuccess() throws Exception{
         var userRegisterDto = UserRegisterDto.builder()
-                .username(testUsername).email(testEmail).password(testPass).build();
+                .username(TEST_USER).email(TEST_EMAIL).password(TEST_PASSWORD).build();
 
         mockMvc.perform(post("/api/v1/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userRegisterDto)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.username").value(testUsername))
-                .andExpect(jsonPath("$.email").value(testEmail));
-        boolean userExists = userRepository.existsByEmail(testEmail);
+                .andExpect(jsonPath("$.username").value(TEST_USER))
+                .andExpect(jsonPath("$.email").value(TEST_EMAIL));
+        boolean userExists = userRepository.existsByEmail(TEST_EMAIL);
         assertTrue(userExists);
     }
 
 
     @Test
-    void loginUser_Success() throws Exception{
+    void testLoginUserSuccess() throws Exception{
         createUserInDb();
-        UserLoginDto login = new UserLoginDto(testUsername, testPass);
+        UserLoginDto login = new UserLoginDto(TEST_USER, TEST_PASSWORD);
 
 
         var login_result = mockMvc.perform(post("/api/v1/users/login")
@@ -80,7 +78,7 @@ public class UserControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(login)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").exists())
-                .andExpect(jsonPath("$.username").value(testUsername))
+                .andExpect(jsonPath("$.username").value(TEST_USER))
                 .andExpect(jsonPath("$.userId").exists())
                 .andReturn();
         AuthResponseDto authDto = objectMapper.readValue(login_result.getResponse().getContentAsString(), AuthResponseDto.class);
@@ -96,17 +94,17 @@ public class UserControllerIntegrationTest {
 
     private void createUserInDb() {
         User user = User.builder()
-                .username(testUsername)
-                .email(testEmail)
-                .password(securityConfig.passwordEncoder().encode(testPass))
+                .username(TEST_USER)
+                .email(TEST_EMAIL)
+                .password(securityConfig.passwordEncoder().encode(TEST_PASSWORD))
                 .build();
         userRepository.save(user);
     }
 
     @Test
-    void addTransaction() throws Exception{
+    void testAddTransaction() throws Exception{
         createUserInDb();
-        UserLoginDto login = new UserLoginDto(testUsername, testPass);
+        UserLoginDto login = new UserLoginDto(TEST_USER, TEST_PASSWORD);
 
 
         var login_result = mockMvc.perform(post("/api/v1/users/login")
@@ -114,13 +112,13 @@ public class UserControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(login)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").exists())
-                .andExpect(jsonPath("$.username").value(testUsername))
+                .andExpect(jsonPath("$.username").value(TEST_USER))
                 .andExpect(jsonPath("$.userId").exists())
                 .andReturn();
         AuthResponseDto authDto = objectMapper.readValue(login_result.getResponse().getContentAsString(), AuthResponseDto.class);
 
 
-        var dtoLists = dtoCreator.createRandomTransactionDtoLists(1, authDto.userId());
+        var dtoLists = TestDtoCreator.createRandomTransactionDtoLists(1, authDto.userId());
         var requestDto = dtoLists.createList().getFirst();
         var responseDto = dtoLists.responseList().getFirst();
 

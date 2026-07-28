@@ -1,6 +1,5 @@
 package ru.ivanov.financetracker.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,22 +30,15 @@ public class TransactionServiceTest {
     @InjectMocks
     private TransactionService transactionService;
 
-    private TestDtoCreator dtoCreator;
 
-    private Long userId;
-    private String userName = "test";
+    private static final Long USER_ID = 1L;
+    private static final String USER_NAME = "test";
 
-    @BeforeEach
-    void setUp() {
-        userId = 1L;
-        userName = "test";
-        dtoCreator = new TestDtoCreator();
-    }
 
     @Test
-    void createTransaction_Success(){
-        when(testUser.getId()).thenReturn(userId);
-        when(userRepository.findByUsername(userName)).thenReturn(Optional.of(testUser));
+    void testCreateTransactionSuccess(){
+        when(testUser.getId()).thenReturn(USER_ID);
+        when(userRepository.findByUsername(USER_NAME)).thenReturn(Optional.of(testUser));
 
         when(transactionRepository.save(any(Transaction.class))).thenAnswer(invocation -> {
             Transaction incomingTransaction = invocation.getArgument(0);
@@ -55,11 +47,11 @@ public class TransactionServiceTest {
         });
 
 
-        var transactionDtoLists = dtoCreator.createRandomTransactionDtoLists(1, userId);
+        var transactionDtoLists = TestDtoCreator.createRandomTransactionDtoLists(1, USER_ID);
         var createDto = transactionDtoLists.createList().getFirst();
         var responseDto = transactionDtoLists.responseList().getFirst();
 
-        var createdDto =  transactionService.createTransaction(createDto, userName);
+        var createdDto =  transactionService.createTransaction(createDto, USER_NAME);
 
         assertEquals(createdDto, responseDto);
 
