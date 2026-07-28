@@ -1,5 +1,7 @@
 package ru.ivanov.financetracker.utils;
 
+import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import org.springframework.stereotype.Component;
 import ru.ivanov.financetracker.dto.TransactionCreateDto;
 import ru.ivanov.financetracker.dto.TransactionResponseDto;
@@ -12,11 +14,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-@Component
+@UtilityClass
 public class TestDtoCreator {
-    public record pairOfTransactionsDtoLists<T1, T2>(List<T1> createList, List<T2> responseList) {}
+    public record PairOfTransactionsDtoLists<T1, T2>(List<T1> createList, List<T2> responseList) {}
 
-    public pairOfTransactionsDtoLists<TransactionCreateDto, TransactionResponseDto> createRandomTransactionDtoLists(int numberOfTransactions, Long userId) {
+    public PairOfTransactionsDtoLists<TransactionCreateDto, TransactionResponseDto> createRandomTransactionDtoLists(int numberOfTransactions, Long userId) {
         List<TransactionCreateDto> createList = new ArrayList<>(numberOfTransactions);
         List<TransactionResponseDto> responseList = new ArrayList<>(numberOfTransactions);
         List<TransactionType> transactionTypes = Arrays.asList(TransactionType.values());
@@ -31,6 +33,6 @@ public class TestDtoCreator {
             createList.add(create);
             responseList.add(response);
         }
-        return new pairOfTransactionsDtoLists<>(createList, responseList);
+        return new PairOfTransactionsDtoLists<>(createList, responseList);
     }
 }
