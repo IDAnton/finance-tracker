@@ -1,8 +1,6 @@
 package ru.ivanov.financetracker.utils;
 
-import lombok.NoArgsConstructor;
 import lombok.experimental.UtilityClass;
-import org.springframework.stereotype.Component;
 import ru.ivanov.financetracker.dto.TransactionCreateDto;
 import ru.ivanov.financetracker.dto.TransactionResponseDto;
 import ru.ivanov.financetracker.model.TransactionType;
