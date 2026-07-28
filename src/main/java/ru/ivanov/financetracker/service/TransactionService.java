@@ -1,6 +1,7 @@
 package ru.ivanov.financetracker.service;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TransactionService {
@@ -25,6 +27,9 @@ public class TransactionService {
 
     @Transactional
     public TransactionResponseDto createTransaction(TransactionCreateDto dto, String username){
+
+        log.info("Создание транзакции для : {}", username);
+
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("пользователь " + username + " не найден"));
 
@@ -37,11 +42,17 @@ public class TransactionService {
                 .build();
 
         Transaction savedTransaction = transactionRepository.save(transaction);
+
+        log.info("Транзакция id: {} для пользователя: {} сохранена", transaction.getId(), username);
+
         return mapToResponseDto(savedTransaction);
     }
 
     @Transactional(readOnly = true)
     public List<TransactionResponseDto> getUserTransactions(String username){
+
+        log.info("Запрос транзакций для пользователя: {}", username);
+
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("пользователь " + username + " не найден"));
         return transactionRepository.findByUserIdOrderByTransactionDateDesc(user.getId())
@@ -53,6 +64,9 @@ public class TransactionService {
 
     @Transactional(readOnly = true)
     public BalanceResponseDto calculateUserTotalBalance(String username) {
+
+        log.info("Запрос на расчет баланса для пользователя: {}", username);
+
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("пользователь " + username + " не найден"));
 
