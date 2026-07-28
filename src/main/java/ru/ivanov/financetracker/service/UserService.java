@@ -5,12 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.ivanov.financetracker.exception.RegistrationException;
 import ru.ivanov.financetracker.security.JwtTokenProvider;
 import ru.ivanov.financetracker.dto.AuthResponseDto;
 import ru.ivanov.financetracker.dto.UserLoginDto;
 import ru.ivanov.financetracker.dto.UserRegisterDto;
 import ru.ivanov.financetracker.dto.UserResponseDto;
-import ru.ivanov.financetracker.exception.BadRequestException;
+import ru.ivanov.financetracker.exception.AuthenticationException;
 import ru.ivanov.financetracker.model.User;
 import ru.ivanov.financetracker.repository.UserRepository;
 
@@ -27,7 +28,7 @@ public class UserService {
     public UserResponseDto registerUser(UserRegisterDto dto){
         if (userRepository.existsByEmail(dto.getEmail())){
             log.warn("Попытка регистрации пользователя: {} с существующим email: {}", dto.getUsername(), dto.getEmail());
-            throw new BadRequestException("такой email уже занят");
+            throw new RegistrationException("такой email уже занят");
         }
 
         String encodedPassword = passwordEncoder.encode(dto.getPassword());
@@ -49,11 +50,11 @@ public class UserService {
     @Transactional(readOnly = true)
     public AuthResponseDto loginUser(UserLoginDto dto){
         User user = userRepository.findByUsername(dto.username())
-                .orElseThrow(() -> new BadRequestException("Неверное имя пользователя или пароль"));
+                .orElseThrow(() -> new AuthenticationException("Неверное имя пользователя или пароль"));
 
         if(!passwordEncoder.matches(dto.password(), user.getPassword())) {
             log.warn("Попытка входа пользователя: {} с неправильным паролем", user.getUsername());
-            throw new BadRequestException("Неверное имя пользователя или пароль");
+            throw new AuthenticationException("Неверное имя пользователя или пароль");
         }
 
         String token = jwtTokenProvider.createToken(user.getId(), user.getUsername());

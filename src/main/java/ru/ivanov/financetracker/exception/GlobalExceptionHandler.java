@@ -13,34 +13,40 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleResourceNotFound(ResourceNotFoundException exception){
         ErrorResponseDto errorDto = new ErrorResponseDto(
-                HttpStatus.NOT_FOUND.value(),
-                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                ResourceNotFoundException.class.getSimpleName(),
                 exception.getMessage(),
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(errorDto, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorResponseDto> handleBadRequest(BadRequestException ex) {
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponseDto> handleBadRequest(AuthenticationException exception) {
         ErrorResponseDto errorDto = new ErrorResponseDto(
-                HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                ex.getMessage(),
+                ResourceNotFoundException.class.getSimpleName(),
+                exception.getMessage(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RegistrationException.class)
+    public ResponseEntity<ErrorResponseDto> handleBadRequest(RegistrationException exception) {
+        ErrorResponseDto errorDto = new ErrorResponseDto(
+                RegistrationException.class.getSimpleName(),
+                exception.getMessage(),
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseDto> handleGeneralException(Exception ex) {
+    public ResponseEntity<ErrorResponseDto> handleGeneralException(Exception exception) {
         ErrorResponseDto errorDto = new ErrorResponseDto(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                ResourceNotFoundException.class.getSimpleName(),
                 "Произошла внутренняя ошибка сервера.",
                 LocalDateTime.now()
         );
-
         return new ResponseEntity<>(errorDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

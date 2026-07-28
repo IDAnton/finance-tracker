@@ -3,8 +3,7 @@ package ru.ivanov.financetracker.dto;
 import java.time.LocalDateTime;
 
 public record ErrorResponseDto(
-        int status,
-        String error,
+        String errorCode,
         String message,
         LocalDateTime timestamp
 ) {}
